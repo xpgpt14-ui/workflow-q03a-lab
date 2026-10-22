@@ -1,0 +1,10 @@
+.next/
+node_modules/
+.workflow-data/
+/.swc
+
+.vercel/
+.env*
+*.log
+.swc/
+app/.well-known/workflow/
