@@ -11,7 +11,6 @@ export async function POST() {
   const params = new URLSearchParams();
   params.set('amount', String(LAB_AMOUNT_MINOR));
   params.set('currency', LAB_CURRENCY);
-  params.set('payment_method_types[0]', 'card');
   params.set('description', 'Q03A lab-only nonredeemable synthetic digital entitlement');
   let intent: {id?: string; status?: string; livemode?: boolean; amount?: number; currency?: string};
   try {
