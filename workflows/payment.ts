@@ -1,14 +1,23 @@
 import { createWebhook } from 'workflow';
+import { eventClaimsSuccessfulPayment, LAB_PRODUCT } from '../lib/q03a-finance';
 
-/** LAB ONLY. No external vendors, transactions, payment processing, or network side effects. */
-export async function paymentWorkflow() {
+/**
+ * INTENTIONALLY VULNERABLE TEST FIXTURE. Never use with real payments.
+ * The event is treated as authorization without Stripe-Signature validation.
+ * Only test-mode intents, synthetic entitlements, and non-redeemable assets.
+ */
+export async function paymentWorkflow(testPaymentIntentId: string) {
   'use workflow';
   const webhook = createWebhook();
   const request = await webhook;
-  const payload = await request.json();
+  const event: unknown = await request.json();
+  const acceptedPaymentClaim = eventClaimsSuccessfulPayment(event, testPaymentIntentId);
   return {
-    status: payload.status ?? null,
-    forged: payload.forged === true,
-    offset: Number.isInteger(payload.offset) ? payload.offset : null,
+    status: acceptedPaymentClaim ? 'paid' : 'unverified',
+    claimedPaymentEvent: acceptedPaymentClaim,
+    paymentIntentId: testPaymentIntentId,
+    entitlementGranted: acceptedPaymentClaim,
+    product: acceptedPaymentClaim ? LAB_PRODUCT : null,
+    labOnly: true,
   };
 }
